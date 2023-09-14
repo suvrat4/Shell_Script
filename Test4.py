@@ -1,3 +1,5 @@
+table_with_borders = f'<table border="0" style="border-collapse: collapse;">{styled_df.to_html(index=False, escape=False)}</table>'
+
 Create an HTML table with borders
 table_with_borders = f'<table border="1">{styled_df.render()}</table>'
 msg.attach(MIMEText(table_with_borders, 'html'))
