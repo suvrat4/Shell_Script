@@ -1,0 +1,20 @@
+TCP vs. UDP
+============
+
+TCP (Transmission Control Protocol) aur UDP (User Datagram Protocol) dono computer networking mei communication ko establish aur manage karne ke liye use hone wale protocols hain. Main difference TCP aur UDP mei reliability aur connection handling ka hota hai.
+
+TCP (Transmission Control Protocol):
+
+Connection-Oriented Protocol: TCP ek connection-oriented protocol hai, jiska matlab hai ki jab do devices (sender aur receiver) communicate karte hain, toh ek stable connection establish hota hai.
+Reliable Data Delivery: TCP data ko reliable tarike se deliver karta hai. Yani, agar koi data packet lost ho jata hai, toh TCP use dobara send karta hai, tak ki data loss na ho.
+Flow Control: TCP flow control ka bhi dhyan rakhta hai, yani agar receiver slow hai data receive karne mei, toh sender apni speed kam kar deta hai, taaki data loss na ho.
+Error Checking: TCP data mei errors ko detect aur correct karne ke liye checksum ka use karta hai.
+UDP (User Datagram Protocol):
+
+Connectionless Protocol: UDP ek connectionless protocol hai, iska matlab hai ki jab data bheja jata hai, toh koi connection establish nahi hota. Har datagram (packet) individually handle hota hai.
+Unreliable Data Delivery: UDP unreliable hai, yani agar koi packet lost ho jata hai, toh use recover nahi kiya jata. Isse high-speed data transfer possible hota hai, lekin data loss risk hota hai.
+No Flow Control: UDP mei flow control nahi hota, iska matlab hai ki sender aur receiver ke bich data transfer speed ka control nahi hota.
+Low Overhead: UDP ka overhead TCP se kam hota hai, kyun ki connection establish aur error recovery jaise additional features nahi hote.
+TCP aur UDP ka selection application ke requirement ke depend karta hai. Agar aapko data ki accuracy aur reliability chahiye, jaise ki web browsing ya file downloading ke liye, toh TCP ka use hota hai. Agar aap real-time data transmission jaise video streaming, online gaming, ya voice calls ke liye speed ki priority dete hain, toh UDP ka use hota hai.
+
+Yeh protocols computer networking mei bahut important hain aur inka sahi se samajhna network communication ko optimize karne mei madad karta hai.
