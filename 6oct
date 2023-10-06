@@ -22,3 +22,14 @@ with pd.ExcelWriter(excel_filename, engine='xlsxwriter', datetime_format='yyyy-m
 # ... (rest of the code for sending the email)
 
 # ...
+
+
+======================
+# Define your custom JQL query
+custom_jql_query = 'project = YOUR_PROJECT_KEY AND status = "In Progress"'
+
+# ...
+
+# Use the custom JQL query
+jql_query = custom_jql_query
+
