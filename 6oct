@@ -1,0 +1,24 @@
+# ... (previous code)
+
+# Create an Excel writer object for the output file using the xlsxwriter engine
+excel_filename = "jira_issues_for_assignees.xlsx"
+with pd.ExcelWriter(excel_filename, engine='xlsxwriter', datetime_format='yyyy-mm-dd') as writer:
+    # Save all issues to the "all issues" sheet
+    df.to_excel(writer, sheet_name='all issues', index=False)
+
+    # Save assignee counts to a new sheet
+    assignee_counts_df.to_excel(writer, sheet_name='assignee counts', index=False)
+
+    # Get the workbook and the "assignee counts" worksheet
+    workbook = writer.book
+    worksheet = writer.sheets['assignee counts']
+
+    # Create a number format with percentage and two decimal places
+    percentage_format = workbook.add_format({'num_format': '0.00%'})
+
+    # Apply the percentage format to the "Resource Utilization" column
+    worksheet.set_column('C:C', None, percentage_format)
+
+# ... (rest of the code for sending the email)
+
+# ...
