@@ -1,1 +1,60 @@
 
+# ... (previous code)
+
+# Initialize an empty list to store issue data including custom fields
+custom_fields_issue_data = []
+
+while True:
+    # ... (rest of the code remains the same)
+
+    # Filter and append issue data for specific assignees, including custom fields
+    for issue in issues:
+        assignee_data = issue['fields']['assignee']
+        assignee_name = assignee_data['displayName'] if assignee_data else 'Unassigned'
+        if assignee_name in assignees:
+            issue_key = issue['key']
+            summary = issue['fields']['summary']
+            status = issue['fields']['status']['name']
+            created_date = datetime.strptime(issue['fields']['created'], '%Y-%m-%dT%H:%M:%S.%f%z').strftime('%Y-%m-%d')
+            resolved_date = issue['fields'].get('resolutiondate', '')
+            if resolved_date:
+                resolved_date = datetime.strptime(resolved_date, '%Y-%m-%dT%H:%M:%S.%f%z').strftime('%Y-%m-%d')
+            # Custom fields "tool" and "root cause" by name
+            tool = issue['fields'].get('customfield_tool', '')  # Replace "customfield_tool" with the actual field name
+            root_cause = issue['fields'].get('customfield_root_cause', '')  # Replace "customfield_root_cause" with the actual field name
+            custom_fields_issue_data.append([issue_key, summary, assignee_name, status, created_date, resolved_date, tool, root_cause])
+
+# Create a DataFrame with issues for specific assignees, including custom fields
+df = pd.DataFrame(custom_fields_issue_data, columns=["Issue Key", "Summary", "Assignee", "Status", "Created Date", "Resolved Date", "Tool", "Root Cause"])
+
+# Format the "Created Date" and "Resolved Date" columns to display only the date part
+df["Created Date"] = pd.to_datetime(df["Created Date"]).dt.strftime('%Y-%m-%d')
+df["Resolved Date"] = pd.to_datetime(df["Resolved Date"]).dt.strftime('%Y-%m-%d')
+
+# Calculate assignee counts
+assignee_counts = df['Assignee'].value_counts().reset_index()
+assignee_counts.columns = ['Assignee', 'Count']
+
+# Create a DataFrame for assignee counts
+assignee_counts_df = pd.DataFrame(assignee_counts)
+
+# Create a new column for "Resource Utilization" (percentage)
+assignee_counts_df['Resource Utilization'] = (assignee_counts_df['Count'] / len(df)) * 100
+
+# Format the "Resource Utilization" column as a percentage with two decimal places
+assignee_counts_df['Resource Utilization'] = assignee_counts_df['Resource Utilization'].apply(lambda x: '{:.2f}%'.format(x))
+
+# Create an Excel writer object for the output file
+excel_filename = "jira_issues_for_assignees.xlsx"
+
+# Save all issues to the "all issues" sheet
+df.to_excel(excel_filename, sheet_name='all issues', index=False)
+
+# Create a Pandas Excel writer object with openpyxl
+with pd.ExcelWriter(excel_filename, engine='openpyxl', mode='a', datetime_format='yyyy-mm-dd') as writer:
+    # Save assignee counts to a new sheet
+    assignee_counts_df.to_excel(writer, sheet_name='assignee counts', index=False)
+
+# ... (rest of the code for sending the email)
+
+# ...
