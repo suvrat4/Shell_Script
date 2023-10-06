@@ -31,5 +31,36 @@ custom_jql_query = 'project = YOUR_PROJECT_KEY AND status = "In Progress"'
 # ...
 
 # Use the custom JQL query
-jql_query = custom_jql_query
+jql_query = custom_jql_quer
+=========================================
+# ... (previous code)
+
+# Calculate assignee counts
+assignee_counts = df['Assignee'].value_counts().reset_index()
+assignee_counts.columns = ['Assignee', 'Count']
+
+# Create a DataFrame for assignee counts
+assignee_counts_df = pd.DataFrame(assignee_counts)
+
+# Create a new column for "Resource Utilization" (percentage)
+assignee_counts_df['Resource Utilization'] = (assignee_counts_df['Count'] / len(df)) * 100
+
+# Format the "Resource Utilization" column as a percentage with two decimal places
+assignee_counts_df['Resource Utilization'] = assignee_counts_df['Resource Utilization'].apply(lambda x: '{:.2f}%'.format(x))
+
+# Create an Excel writer object for the output file
+excel_filename = "jira_issues_for_assignees.xlsx"
+
+# Save all issues to the "all issues" sheet
+df.to_excel(excel_filename, sheet_name='all issues', index=False)
+
+# Create a Pandas Excel writer object with openpyxl
+with pd.ExcelWriter(excel_filename, engine='openpyxl', mode='a', datetime_format='yyyy-mm-dd') as writer:
+    # Save assignee counts to a new sheet
+    assignee_counts_df.to_excel(writer, sheet_name='assignee counts', index=False)
+
+# ... (rest of the code for sending the email)
+
+# ...
+
 
