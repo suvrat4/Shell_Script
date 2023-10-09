@@ -40,3 +40,41 @@ with pd.ExcelWriter(excel_filename, engine='openpyxl', mode='a', datetime_format
 # ... (rest of the code for sending the email)
 
 # ...
+
+=======================
+
+# ... (previous code)
+
+# Calculate assignee counts for open and closed tickets
+assignee_counts_open = open_issues_df['Assignee'].value_counts().reset_index()
+assignee_counts_open.columns = ['Assignee', 'Open Count']
+
+assignee_counts_closed = closed_issues_df['Assignee'].value_counts().reset_index()
+assignee_counts_closed.columns = ['Assignee', 'Completed Count']
+
+# Merge the DataFrames to include the open and completed counts
+assignee_counts_df = assignee_counts_df.merge(assignee_counts_open, on='Assignee', how='left')
+assignee_counts_df = assignee_counts_df.merge(assignee_counts_closed, on='Assignee', how='left')
+
+# Fill NaN values with 0 for assignees with no open or completed counts
+assignee_counts_df['Open Count'] = assignee_counts_df['Open Count'].fillna(0)
+assignee_counts_df['Completed Count'] = assignee_counts_df['Completed Count'].fillna(0)
+
+# Calculate resource utilization as a percentage based on completed counts
+assignee_counts_df['Resource Utilization (%)'] = (assignee_counts_df['Completed Count'] / assignee_counts_df['Total Count']) * 100
+
+# Create an Excel writer object for the output file
+excel_filename = "jira_issues_for_assignees.xlsx"
+
+# Save all issues to the "all issues" sheet
+df.to_excel(excel_filename, sheet_name='all issues', index=False)
+
+# Create a Pandas Excel writer object with openpyxl
+with pd.ExcelWriter(excel_filename, engine='openpyxl', mode='a', datetime_format='yyyy-mm-dd') as writer:
+    # Save assignee counts to a new sheet
+    assignee_counts_df.to_excel(writer, sheet_name='assignee counts', index=False)
+
+# ... (rest of the code for sending the email)
+
+# ...
+
