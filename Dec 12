@@ -1,0 +1,57 @@
+from azure.identity import DeviceCodeCredential
+from azure.mgmt.compute import ComputeManagementClient
+from azure.mgmt.network import NetworkManagementClient
+import tkinter as tk
+
+class AzureVMApp:
+    def __init__(self, master):
+        self.master = master
+        master.title("Azure VM Access App")
+
+        self.resource_group_label = tk.Label(master, text="Resource Group:")
+        self.resource_group_label.pack()
+
+        self.resource_group_entry = tk.Entry(master)
+        self.resource_group_entry.pack()
+
+        self.vm_name_label = tk.Label(master, text="VM Name:")
+        self.vm_name_label.pack()
+
+        self.vm_name_entry = tk.Entry(master)
+        self.vm_name_entry.pack()
+
+        self.connect_button = tk.Button(master, text="Connect to VM", command=self.connect_to_vm)
+        self.connect_button.pack()
+
+    def connect_to_vm(self):
+        resource_group_name = self.resource_group_entry.get()
+        vm_name = self.vm_name_entry.get()
+
+        credentials = DeviceCodeCredential(
+            client_id="<your_client_id>",
+            authority="organizations",
+            tenant_id="<your_tenant_id>"
+        )
+
+        compute_client = ComputeManagementClient(credentials, "<your_subscription_id>")
+        network_client = NetworkManagementClient(credentials, "<your_subscription_id>")
+
+        try:
+            vm_ip_address = self.get_vm_ip_address(resource_group_name, vm_name, compute_client, network_client)
+            # Add logic here to connect to the VM using the obtained IP address
+            print(f"Connected to VM at IP: {vm_ip_address}")
+        except Exception as e:
+            print(f"Error: {str(e)}")
+
+    def get_vm_ip_address(self, resource_group_name, vm_name, compute_client, network_client):
+        vm = compute_client.virtual_machines.get(resource_group_name, vm_name)
+        nic_id = vm.network_profile.network_interfaces[0].id
+        nic = network_client.network_interfaces.get(resource_group_name, nic_id.split('/')[-1])
+        ip_config_id = nic.ip_configurations[0].id
+        ip_config = network_client.network_interfaces.get_ip_configuration(resource_group_name, nic.id.split('/')[-1], ip_config_id.split('/')[-1])
+        return ip_config.private_ip_address
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = AzureVMApp(root)
+    root.mainloop()
